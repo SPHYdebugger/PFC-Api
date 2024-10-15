@@ -7,8 +7,11 @@
 
 ## Descripción
 
-Este proyecto es una API REST desarrollada con **Spring Boot** que utiliza una base de datos **PostgreSQL**. La API permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre las entidades.
+Este proyecto es una API REST desarrollada con **Spring Boot** que utiliza una base de datos **PostgreSQL**. La API permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre las entidades:
+
 VEHÍCULO
+
 GASOLINERA
+
 REPOSTAJE
 
