@@ -23,5 +23,11 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
     List<Refuel> findByStation(Station station);
 
 
+    List<Refuel> findByVehicleId(Long vehicleId);
+    List<Refuel> findByStationId(Long stationId);
+
+
+
+
 
 }

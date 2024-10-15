@@ -36,16 +36,20 @@ public class Refuel {
     private float price;
     @Column(name = "creation_date")
     private String creationDate;
-
+    @Column
+    @NotNull(message = "Station can´t be NULL")
+    private Long stationId;
 
     @JsonBackReference("refuel_vehicle")
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
-    @JsonBackReference("refuel_station")
+    /*@JsonBackReference("refuel_station")
     @ManyToOne
     @JoinColumn(name = "station_id")
-    private Station station;
+    private Station station;*/
+
+
 
 }
