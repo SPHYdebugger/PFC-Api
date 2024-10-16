@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface StationRepository extends CrudRepository<Station, Long> {
 
     List<Station> findAll();
+    Optional<Station> findByName(String name);
     List<Station> findByGlpFuel(boolean glpFuel);
     List<Station> findByFavorite(boolean Favorite);
 

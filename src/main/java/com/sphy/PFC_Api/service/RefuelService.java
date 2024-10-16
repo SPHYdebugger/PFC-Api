@@ -2,6 +2,8 @@ package com.sphy.PFC_Api.service;
 
 
 
+import com.sphy.PFC_Api.dto.RefuelDTO;
+import com.sphy.PFC_Api.exception.RefuelNotFoundException;
 import com.sphy.PFC_Api.exception.StationNotFoundException;
 import com.sphy.PFC_Api.exception.VehicleNotFoundException;
 import com.sphy.PFC_Api.model.Refuel;
@@ -18,7 +20,9 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,40 +36,71 @@ public class RefuelService {
     @Autowired
     private StationService stationService;
 
-    public Refuel addRefuel(String licensePlate, Refuel refuel) throws VehicleNotFoundException, StationNotFoundException {
-        Refuel refuelAdd = new Refuel();
 
-        Vehicle vehicle = vehicleService.findByLicensePlate(licensePlate).orElseThrow(() -> new VehicleNotFoundException(licensePlate));
-        refuelAdd.setVehicle(vehicle);
-
-        Station station = stationService.findById(refuel.getStationId())
-                .orElseThrow(() -> new StationNotFoundException(refuel.getStationId()));
-
-        refuelAdd.setStationId(station.getId());
-        //refuelAdd.setStation(station);
-
-        refuelAdd.setFuel(refuel.getFuel());
-        refuelAdd.setAmount(refuel.getAmount());
-        refuelAdd.setPrice(refuel.getPrice());
-        refuelAdd.setCreationDate(refuel.getCreationDate());
-        refuelRepository.save(refuelAdd);
-
-        return refuelAdd;
+    public List<RefuelDTO> getAllRefuels() {
+        List<Refuel> refuels = refuelRepository.findAll();
+        return refuels.stream()
+                .map(refuel -> new RefuelDTO(
+                        refuel.getId(),
+                        refuel.getFuel(),
+                        refuel.getAmount(),
+                        refuel.getPrice(),
+                        refuel.getCreationDate(),
+                        refuel.getVehicle().getLicensePlate(),
+                        refuel.getStation().getName()
+                ))
+                .collect(Collectors.toList());
     }
 
-    public List<Refuel> getAll() {
-        return refuelRepository.findAll();
+    public RefuelDTO getRefuelById(long refuelId) {
+        Refuel refuel = refuelRepository.findById(refuelId)
+                .orElseThrow(() -> new RefuelNotFoundException("Refuel with ID " + refuelId + " not found"));
+        return new RefuelDTO(
+                refuel.getId(),
+                refuel.getFuel(),
+                refuel.getAmount(),
+                refuel.getPrice(),
+                refuel.getCreationDate(),
+                refuel.getVehicle().getLicensePlate(),
+                refuel.getStation().getName()
+        );
     }
+
 
     public List<Refuel> getRefuelsByVehicleId(Long vehicleId) {
         return refuelRepository.findByVehicleId(vehicleId);
+    }
+    public List<Refuel> getRefuelsByLicensePlate(String licensePlate) {
+        return refuelRepository.findByVehicleLicensePlate(licensePlate);
     }
 
     public List<Refuel> getRefuelsByStationId(Long stationId) {
         return refuelRepository.findByStationId(stationId);
     }
 
+
+
+
+    public Refuel addRefuel(long vehicleId, long stationId, Refuel refuel) {
+        Vehicle vehicle = vehicleService.findById(vehicleId)
+                .orElseThrow(() -> new VehicleNotFoundException(" The vehicleId " + vehicleId + " doesn´t exist"));
+        Station station = stationService.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException(stationId));
+        refuel.setVehicle(vehicle);
+        refuel.setStation(station);
+        refuel.setCreationDate(LocalDate.now().toString());
+        return refuelRepository.save(refuel);
+    }
+
+
+
+
     public void delete(Long id) {
         refuelRepository.deleteById(id);
     }
+    public void deleteRefuelsByVehicleId(Long vehicleId) {
+        refuelRepository.deleteByVehicleId(vehicleId);
+    }
+
+
 }

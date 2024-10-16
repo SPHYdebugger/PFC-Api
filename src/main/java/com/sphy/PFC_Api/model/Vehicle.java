@@ -45,6 +45,8 @@ public class Vehicle {
     @NotNull(message = "Initial kilometers can´t be NULL")
     @Positive(message = "Initial Kilimeters can´t be negative")
     private int kmInit;
+    @Column(name = "registration_date")
+    private String registrationDate;
 
 
 

@@ -20,19 +20,23 @@ public class StationService {
     public List<Station> getAll() {
         return stationRepository.findAll();
     }
-
-
     public Optional<Station> findById(Long id) {
         return stationRepository.findById(id);
     }
+    public Optional<Station> findByName(String name) {
+        return stationRepository.findByName(name);
+    }
 
-    // Método para guardar una nueva estación
+    public boolean existsById(Long stationId) {
+        return stationRepository.existsById(stationId);
+    }
+
     public Station save(Station station) {
         return stationRepository.save(station);
     }
 
-    // Método para actualizar una estación existente
-    public void modifyStationById(Station newStation, long id) {
+
+    public Station modifyStationById(Station newStation, long id) {
         Optional<Station> station = stationRepository.findById(id);
         if (station.isPresent()) {
             Station existingStation = station.get();
@@ -40,11 +44,12 @@ public class StationService {
             existingStation.setAddress(newStation.getAddress());
             existingStation.setFavorite(newStation.isFavorite());
             existingStation.setGlpFuel(newStation.isGlpFuel());
-            stationRepository.save(existingStation);
+            return stationRepository.save(existingStation);
         }
+        return null;
     }
 
-    // Método para eliminar una estación
+
     public void delete(Long id) throws StationNotFoundException {
         if (!stationRepository.existsById(id)) {
             throw new StationNotFoundException(id);

@@ -2,6 +2,7 @@ package com.sphy.PFC_Api.service;
 
 
 
+import com.sphy.PFC_Api.dto.VehicleDTO;
 import com.sphy.PFC_Api.model.Vehicle;
 import com.sphy.PFC_Api.repository.VehicleRepository;
 import jakarta.transaction.Transactional;
@@ -20,42 +21,47 @@ public class VehicleService {
     public List<Vehicle> getAll() {
         return vehicleRepository.findAll();
     }
-
     public Optional<Vehicle> findById(long id) {
         return vehicleRepository.findById(id);
     }
     public Optional<Vehicle> findByLicensePlate(String licensePlate) {
         return vehicleRepository.findByLicensePlate(licensePlate);
     }
-
-
-    /*public List<Vehicle> findVehicleByUser(String firstname) {
-        return vehicleRepository.findByUser(firstname);
-    }*/
-
-
-    public void save(Vehicle vehicle) { vehicleRepository.save(vehicle);
+    public boolean existsById(Long vehicleId) {
+        return vehicleRepository.existsById(vehicleId);
     }
-    @Transactional
+
+
+
+    public Vehicle save(Vehicle vehicle) {
+        return  vehicleRepository.save(vehicle);
+    }
+
+
+    public Vehicle modifyVehicleByLicense(VehicleDTO vehicleDTO, String licensePlate) {
+        Optional<Vehicle> optionalVehicle = findByLicensePlate(licensePlate);
+        if (optionalVehicle.isPresent()) {
+            Vehicle vehicle = optionalVehicle.get();
+            vehicle.setBrand(vehicleDTO.getBrand());
+            vehicle.setModel(vehicleDTO.getModel());
+            vehicle.setFuel1(vehicleDTO.getFuel1());
+            vehicle.setFuel2(vehicleDTO.getFuel2());
+            vehicle.setKmInit(vehicleDTO.getKmInit());
+            return vehicleRepository.save(vehicle);
+        }
+        return null;
+    }
+
+
+
+
+
     public void deleteVehicleById(long id) {
         vehicleRepository.deleteById(id);
     }
-    @Transactional
-    public void deleteVehicleByLicensePlate(String liceseplate) {
-        vehicleRepository.deleteByLicensePlate(liceseplate);
-    }
 
-    public void modifyVehicleByLicense(Vehicle newVehicle, String licensePlate) {
-        Optional<Vehicle> vehicle = vehicleRepository.findByLicensePlate(licensePlate);
-        if (vehicle.isPresent()) {
-            Vehicle existingVehicle = vehicle.get();
-            existingVehicle.setBrand(newVehicle.getBrand());
-            existingVehicle.setModel(newVehicle.getModel());
-            existingVehicle.setFuel1(newVehicle.getFuel1());
-            existingVehicle.setFuel2(existingVehicle.getFuel2());
-            existingVehicle.setKmInit(newVehicle.getKmInit());
-            vehicleRepository.save(existingVehicle);
-        }
+    public void deleteVehicleByLicensePlate(String licensePlate) {
+        vehicleRepository.deleteByLicensePlate(licensePlate);
     }
 
 
