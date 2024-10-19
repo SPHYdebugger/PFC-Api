@@ -48,7 +48,7 @@ public class Vehicle {
     private float medConsumption;
     @Column(name = "registration_date")
     private String registrationDate;
-
+    private boolean hide;
 
 
     @OneToMany(mappedBy = "vehicle")

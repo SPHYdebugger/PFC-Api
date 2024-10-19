@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleDTO {
+    private long id;
+    private String licensePlate;
     @NotNull(message = "Brand can't be NULL")
     @NotBlank(message = "Brand can't be empty")
     private String brand;
@@ -28,5 +30,8 @@ public class VehicleDTO {
 
     @NotNull(message = "Initial kilometers can´t be NULL")
     @Positive(message = "Initial Kilometers can´t be negative")
-    private int kmInit;
+    private int kmActual;
+    private float medConsumption;
+
+    private int refuels = 0;
 }

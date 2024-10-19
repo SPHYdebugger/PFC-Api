@@ -17,6 +17,8 @@ import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,28 +39,46 @@ public class VehicleController {
     private Logger logger = LoggerFactory.getLogger(VehicleController.class);
 
 
-    // Obtener todos los Vehículos o filtrar uno por matrícula o id
+    // Obtener todos los vehículos
     @GetMapping("/vehicles")
-    public ResponseEntity<List<Vehicle>> findAll(
-            @RequestParam(defaultValue = "") String licensePlate,
-            @RequestParam(defaultValue = "0") long vehicleId
-    ) throws VehicleNotFoundException {
-        if (!licensePlate.isEmpty()) {
-            Optional<Vehicle> optionalVehicle = vehicleService.findByLicensePlate(licensePlate);
-            Vehicle vehicle = optionalVehicle.orElseThrow(() -> new VehicleNotFoundException(licensePlate));
-            return new ResponseEntity<>(Collections.singletonList(vehicle), HttpStatus.OK);
-        } else if (vehicleId!=0) {
-            Optional<Vehicle> optionalVehicle = vehicleService.findById(vehicleId);
-            Vehicle vehicle = optionalVehicle.orElseThrow(() -> new VehicleNotFoundException(licensePlate));
-            return new ResponseEntity<>(Collections.singletonList(vehicle), HttpStatus.OK);
-        } else {
-            List<Vehicle> allVehicles = vehicleService.getAll();
-            return new ResponseEntity<>(allVehicles, HttpStatus.OK);
-        }
+    public ResponseEntity<List<VehicleDTO>> getAllVehicles() {
+        List<Vehicle> allVehicles = vehicleService.getAll();
+        List<VehicleDTO> vehicleDTOs = allVehicles.stream()
+                .map(vehicle -> {
+                    VehicleDTO dto = new VehicleDTO();
+                    dto.setId(vehicle.getId());
+                    dto.setLicensePlate(vehicle.getLicensePlate());
+                    dto.setBrand(vehicle.getBrand());
+                    dto.setModel(vehicle.getModel());
+                    dto.setFuel1(vehicle.getFuel1());
+                    dto.setFuel2(vehicle.getFuel2());
+                    dto.setKmActual(vehicle.getKmActual());
+                    dto.setMedConsumption(vehicle.getMedConsumption());
+                    if (vehicleService.countRefuelsByVehicleId(vehicle.getId())!=null){
+                        dto.setRefuels(vehicleService.countRefuelsByVehicleId(vehicle.getId()));
+                    } else dto.setRefuels(0);
 
-
-
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(vehicleDTOs, HttpStatus.OK);
     }
+
+    // Buscar un vehículo por ID o matrícula
+    @GetMapping("/vehicles/{identifier}")
+    public ResponseEntity<Vehicle> getVehicleByIdentifier(@PathVariable String identifier) throws VehicleNotFoundException {
+        if (identifier.matches("\\d+")) { // Solo números
+            long vehicleId = Long.parseLong(identifier);
+            Optional<Vehicle> optionalVehicle = vehicleService.findById(vehicleId);
+            Vehicle vehicle = optionalVehicle.orElseThrow(() -> new VehicleNotFoundException("Vehicle with ID " + vehicleId + " not found."));
+            return new ResponseEntity<>(vehicle, HttpStatus.OK);
+        } else { // Contiene letras
+            Optional<Vehicle> optionalVehicle = vehicleService.findByLicensePlate(identifier);
+            Vehicle vehicle = optionalVehicle.orElseThrow(() -> new VehicleNotFoundException("Vehicle with license plate " + identifier + " not found."));
+            return new ResponseEntity<>(vehicle, HttpStatus.OK);
+        }
+    }
+
 
     // Añadir un nuevo vehículo
     @PostMapping("/vehicles")

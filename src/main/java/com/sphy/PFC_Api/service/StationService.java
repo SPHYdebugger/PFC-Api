@@ -56,4 +56,9 @@ public class StationService {
         }
         stationRepository.deleteById(id);
     }
+
+    public int countRefuelsByStationId(long stationId) {
+        return stationRepository.countRefuelsByStationId(stationId);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.sphy.PFC_Api.controller;
 
 
+import com.sphy.PFC_Api.dto.StationDTO;
 import com.sphy.PFC_Api.exception.StationAlreadyExistException;
 import com.sphy.PFC_Api.exception.StationNotFoundException;
 import com.sphy.PFC_Api.exception.VehicleAlreadyExistException;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class StationController {
@@ -35,10 +37,26 @@ public class StationController {
 
     // Obtener todas las estaciones
     @GetMapping("/stations")
-    public ResponseEntity<List<Station>> findAllStations() {
+    public ResponseEntity<List<StationDTO>> getAllStations() {
         List<Station> allStations = stationService.getAll();
-        return new ResponseEntity<>(allStations, HttpStatus.OK);
+        List<StationDTO> stationDTOs = allStations.stream()
+                .map(station -> {
+                    StationDTO dto = new StationDTO();
+                    dto.setId(station.getId());
+                    dto.setName(station.getName());
+                    dto.setAddress(station.getAddress());
+                    dto.setRegistrationDate(station.getRegistrationDate());
+                    dto.setFavorite(station.isFavorite());
+                    dto.setGlpFuel(station.isGlpFuel());
+                    // Establecer el número de refuels para la estación
+                    int refuelsCount = stationService.countRefuelsByStationId(station.getId());
+                    dto.setRefuels(refuelsCount);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(stationDTOs, HttpStatus.OK);
     }
+
 
     //Buscar por id o nombre
     @GetMapping("/stations/{stationIdentifier}")

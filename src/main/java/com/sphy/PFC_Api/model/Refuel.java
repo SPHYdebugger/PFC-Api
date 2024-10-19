@@ -42,8 +42,9 @@ public class Refuel {
     @Positive(message = "Price can´t be negative")
     private float price;
     @Column
-    @Min(value = 1, message = "Traveled KMs must be greater than 0")
-    private int kmActual;
+    private int kmTotal;
+    @Column
+    private int kmTraveled;
     @Column
     private boolean fulled;
     @Column(name = "creation_date")

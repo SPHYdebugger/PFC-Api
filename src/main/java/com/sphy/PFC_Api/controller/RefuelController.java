@@ -93,7 +93,7 @@ public class RefuelController {
             @PathVariable long stationId,
             @Valid @RequestBody Refuel refuel) {
 
-        int traveledKms = refuel.getKmActual() - refuelService.getTotalKmsByVehicleId(vehicleId);
+        int traveledKms = refuel.getKmTotal() - refuelService.getTotalKmsByVehicleId(vehicleId);
         float fuelRefueled = refuel.getAmount()/ refuel.getPrice();
         float refuelConsumption = (fuelRefueled*100)/traveledKms;
         Float averageConsumption = refuelService.getAverageConsumption(vehicleId);
@@ -101,7 +101,7 @@ public class RefuelController {
         if (averageConsumption != null){
             medConsumption = (averageConsumption+refuelConsumption)/2;
         }else {
-            medConsumption = 5.0f;
+            medConsumption = refuelConsumption;
         }
         if (traveledKms <= 0 ){
             throw new IllegalArgumentException("The current kilometers cannot be less than the previous refueling");
@@ -116,7 +116,7 @@ public class RefuelController {
             Station existStation = station.get();
             stationName = existStation.getName();
             vehicleLicense = existVehicle.getLicensePlate();
-            existVehicle.setKmActual(refuel.getKmActual());
+            existVehicle.setKmActual(refuel.getKmTotal());
             existVehicle.setMedConsumption(medConsumption);
             vehicleService.save(existVehicle);
 
@@ -125,7 +125,7 @@ public class RefuelController {
         }
         refuel.setNameStation(stationName);
         refuel.setNameVehicle(vehicleLicense);
-        refuel.setKmActual(traveledKms);
+        refuel.setKmTraveled(traveledKms);
         refuel.setRefueledLiters(fuelRefueled);
         refuel.setRefuelConsumption(refuelConsumption);
         refuel.setMedConsumption(medConsumption);

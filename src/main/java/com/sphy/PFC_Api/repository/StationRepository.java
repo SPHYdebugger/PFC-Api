@@ -2,7 +2,9 @@ package com.sphy.PFC_Api.repository;
 
 
 import com.sphy.PFC_Api.model.Station;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,6 +20,7 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 
     Optional<Station> deleteById(long stationId);
 
-
+    @Query(value = "SELECT COUNT(*) FROM refuels WHERE station_id = :stationId", nativeQuery = true)
+    int countRefuelsByStationId(@Param("stationId") long stationId);
 
 }

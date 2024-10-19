@@ -46,7 +46,7 @@ public class VehicleService {
             vehicle.setModel(vehicleDTO.getModel());
             vehicle.setFuel1(vehicleDTO.getFuel1());
             vehicle.setFuel2(vehicleDTO.getFuel2());
-            vehicle.setKmActual(vehicleDTO.getKmInit());
+            vehicle.setKmActual(vehicleDTO.getKmActual());
             return vehicleRepository.save(vehicle);
         }
         return null;
@@ -64,6 +64,8 @@ public class VehicleService {
         vehicleRepository.deleteByLicensePlate(licensePlate);
     }
 
-
+    public Integer countRefuelsByVehicleId(long id) {
+        return vehicleRepository.countRefuelsByVehicleId(id);
+    }
 
 }
