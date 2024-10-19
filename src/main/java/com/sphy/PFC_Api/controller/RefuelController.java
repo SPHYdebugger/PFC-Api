@@ -6,7 +6,10 @@ import com.sphy.PFC_Api.exception.VehicleNotFoundException;
 import com.sphy.PFC_Api.model.ErrorResponse;
 import com.sphy.PFC_Api.model.Refuel;
 import com.sphy.PFC_Api.model.Station;
+import com.sphy.PFC_Api.model.Vehicle;
 import com.sphy.PFC_Api.service.RefuelService;
+import com.sphy.PFC_Api.service.StationService;
+import com.sphy.PFC_Api.service.VehicleService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +31,15 @@ import java.util.*;
 public class RefuelController {
 
     private final RefuelService refuelService;
+    private VehicleService vehicleService;
+    private StationService stationService;
     private Logger logger = LoggerFactory.getLogger(RefuelController.class);
 
     @Autowired
-    public RefuelController(RefuelService refuelService) {
+    public RefuelController(RefuelService refuelService, VehicleService vehicleService, StationService stationService) {
         this.refuelService = refuelService;
+        this.vehicleService = vehicleService;
+        this.stationService = stationService;
     }
 
     @GetMapping("/refuels")
@@ -63,7 +70,7 @@ public class RefuelController {
     }
 
 
-    @PostMapping("refuels/{vehicleId}/{stationId}")
+    /*@PostMapping("refuels/{vehicleId}/{stationId}")
     public ResponseEntity<RefuelDTO> addRefuel(
             @PathVariable long vehicleId,
             @PathVariable long stationId,
@@ -79,7 +86,54 @@ public class RefuelController {
                 savedRefuel.getStation().getName()
         );
         return new ResponseEntity<>(refuelDTO, HttpStatus.CREATED);
+    }*/
+    @PostMapping("refuels/{vehicleId}/{stationId}")
+    public ResponseEntity<Refuel> addRefuel(
+            @PathVariable long vehicleId,
+            @PathVariable long stationId,
+            @Valid @RequestBody Refuel refuel) {
+
+        int traveledKms = refuel.getKmActual() - refuelService.getTotalKmsByVehicleId(vehicleId);
+        float fuelRefueled = refuel.getAmount()/ refuel.getPrice();
+        float refuelConsumption = (fuelRefueled*100)/traveledKms;
+        Float averageConsumption = refuelService.getAverageConsumption(vehicleId);
+        float medConsumption;
+        if (averageConsumption != null){
+            medConsumption = (averageConsumption+refuelConsumption)/2;
+        }else {
+            medConsumption = 5.0f;
+        }
+        if (traveledKms <= 0 ){
+            throw new IllegalArgumentException("The current kilometers cannot be less than the previous refueling");
+        }
+
+        Optional<Vehicle> vehicle = vehicleService.findById(vehicleId);
+        Optional<Station> station = stationService.findById(stationId);
+        String stationName = null;
+        String vehicleLicense = null;
+        if (vehicle.isPresent() && station.isPresent()){
+            Vehicle existVehicle = vehicle.get();
+            Station existStation = station.get();
+            stationName = existStation.getName();
+            vehicleLicense = existVehicle.getLicensePlate();
+            existVehicle.setKmActual(refuel.getKmActual());
+            existVehicle.setMedConsumption(medConsumption);
+            vehicleService.save(existVehicle);
+
+        } else {
+            throw new VehicleNotFoundException("Vehicle or station not found");
+        }
+        refuel.setNameStation(stationName);
+        refuel.setNameVehicle(vehicleLicense);
+        refuel.setKmActual(traveledKms);
+        refuel.setRefueledLiters(fuelRefueled);
+        refuel.setRefuelConsumption(refuelConsumption);
+        refuel.setMedConsumption(medConsumption);
+        refuelService.addRefuel(vehicleId, stationId, refuel);
+
+        return new ResponseEntity<>(refuel, HttpStatus.CREATED);
     }
+
 
 
 

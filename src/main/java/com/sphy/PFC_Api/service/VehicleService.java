@@ -46,7 +46,7 @@ public class VehicleService {
             vehicle.setModel(vehicleDTO.getModel());
             vehicle.setFuel1(vehicleDTO.getFuel1());
             vehicle.setFuel2(vehicleDTO.getFuel2());
-            vehicle.setKmInit(vehicleDTO.getKmInit());
+            vehicle.setKmActual(vehicleDTO.getKmInit());
             return vehicleRepository.save(vehicle);
         }
         return null;

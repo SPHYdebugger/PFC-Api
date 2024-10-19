@@ -102,5 +102,16 @@ public class RefuelService {
         refuelRepository.deleteByVehicleId(vehicleId);
     }
 
+    public Integer getTotalKmsByVehicleId(long id) {
+        return refuelRepository.findTotalKmsByVehicleId(id);
+    }
+
+    public Float getAverageConsumption(long id) {
+        return refuelRepository.findAverageMedConsumptionByVehicleId(id);
+    }
+
+    public Integer findVehicleId(long id) {
+        return refuelRepository.findVehicleId(id);
+    }
 
 }
