@@ -52,7 +52,7 @@ public class RefuelService {
                 .collect(Collectors.toList());
     }
 
-    public RefuelDTO getRefuelById(long refuelId) {
+    /*public RefuelDTO getRefuelById(long refuelId) {
         Refuel refuel = refuelRepository.findById(refuelId)
                 .orElseThrow(() -> new RefuelNotFoundException("Refuel with ID " + refuelId + " not found"));
         return new RefuelDTO(
@@ -64,8 +64,15 @@ public class RefuelService {
                 refuel.getVehicle().getLicensePlate(),
                 refuel.getStation().getName()
         );
+    }*/
+
+    public Optional<Refuel> findById(long refuelId) {
+        return refuelRepository.findById(refuelId);
     }
 
+    public Integer findVehicleId(long id) {
+        return refuelRepository.findVehicleId(id);
+    }
 
     public List<Refuel> getRefuelsByVehicleId(Long vehicleId) {
         return refuelRepository.findByVehicleId(vehicleId);
@@ -77,8 +84,9 @@ public class RefuelService {
     public List<Refuel> getRefuelsByStationId(Long stationId) {
         return refuelRepository.findByStationId(stationId);
     }
-
-
+    public List<Refuel> getRefuelsByStationName(String refuelIdentifier) {
+        return refuelRepository.findByNameStation(refuelIdentifier);
+    }
 
 
     public Refuel addRefuel(long vehicleId, long stationId, Refuel refuel) {
@@ -94,37 +102,25 @@ public class RefuelService {
 
 
 
-
+    //Borrado
     public void delete(Long id) {
         refuelRepository.deleteById(id);
     }
     public void deleteRefuelsByVehicleId(Long vehicleId) {
         refuelRepository.deleteByVehicleId(vehicleId);
     }
+    public void deleteRefuelsByStationId(Long stationId) {refuelRepository.deleteByStationId(stationId);}
+
 
     public Integer getTotalKmsByVehicleId(long id) {
         return refuelRepository.findTotalKmsByVehicleId(id);
     }
-
     public Float getAverageConsumption(long id) {
         return refuelRepository.findAverageMedConsumptionByVehicleId(id);
     }
 
-    public Integer findVehicleId(long id) {
-        return refuelRepository.findVehicleId(id);
+
+    public void save(Refuel refuel) {
+        refuelRepository.save(refuel);
     }
-
-    public Optional<Refuel> findById(long refuelId) {
-        return refuelRepository.findById(refuelId);
-    }
-
-
-    public List<Refuel> getRefuelsByStationName(String refuelIdentifier) {
-        return refuelRepository.findByNameStation(refuelIdentifier);
-    }
-
-    public void deleteRefuelsByStationId(Long stationId) {
-        refuelRepository.deleteByStationId(stationId);
-    }
-
 }

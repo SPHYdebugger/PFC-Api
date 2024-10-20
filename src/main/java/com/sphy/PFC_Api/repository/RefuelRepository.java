@@ -36,6 +36,10 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
     @Transactional
     void deleteByVehicleId(Long vehicleId);
 
+    @Modifying
+    @Transactional
+    void deleteByStationId(Long vehicleId);
+
     @Query(value = "SELECT vehicle_id FROM refuels WHERE id = :id", nativeQuery = true)
     Integer findVehicleId(@Param("id") long id);
 
@@ -44,9 +48,10 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
 
     @Query(value = "SELECT km_actual FROM vehicles WHERE id = :id", nativeQuery = true)
     Integer findTotalKmsByVehicleId(@Param("id") long id);
-    @Modifying
-    @Query("DELETE FROM Refuels WHERE station.id = :stationId")
-    void deleteByStationId(@Param("stationId") Long stationId);
+
+    /*@Modifying
+    @Query("DELETE FROM refuels WHERE station_id = :stationId")
+    void deleteByStationId(@Param("stationId") Long stationId);*/
 
 
 }

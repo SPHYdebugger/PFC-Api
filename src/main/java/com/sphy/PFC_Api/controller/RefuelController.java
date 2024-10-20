@@ -52,14 +52,14 @@ public class RefuelController {
     // Buscar Refuel por id, nombre de la estación o matrícula del vehículo
     @GetMapping("/refuels/{refuelIdentifier}")
     public ResponseEntity<List<Refuel>> findRefuelByIdentifier(@PathVariable String refuelIdentifier) throws RefuelNotFoundException {
-        // Si el identificador es solo números, buscar por ID
+        // solo números, buscar por ID
         if (refuelIdentifier.matches("\\d+")) {
             long refuelId = Long.parseLong(refuelIdentifier);
             Optional<Refuel> optionalRefuel = refuelService.findById(refuelId);
             Refuel refuel = optionalRefuel.orElseThrow(() -> new RefuelNotFoundException("Refuel with ID " + refuelId + " not found."));
             return new ResponseEntity<>(Collections.singletonList(refuel), HttpStatus.OK);
 
-            // Si el identificador es solo letras, buscar por nombre de la estación
+            // solo letras, buscar por nombre de la estación
         } else if (refuelIdentifier.matches("[a-zA-Z]+")) {
             List<Refuel> refuelsByStationName = refuelService.getRefuelsByStationName(refuelIdentifier);
             if (refuelsByStationName.isEmpty()) {
@@ -67,7 +67,7 @@ public class RefuelController {
             }
             return new ResponseEntity<>(refuelsByStationName, HttpStatus.OK);
 
-            // Si el identificador es una combinación de letras y números, buscar por matrícula del vehículo
+            // combinación de letras y números, buscar por matrícula del vehículo
         } else if (refuelIdentifier.matches("[a-zA-Z0-9]+")) {
             List<Refuel> refuelsByLicensePlate = refuelService.getRefuelsByLicensePlate(refuelIdentifier);
             if (refuelsByLicensePlate.isEmpty()) {
@@ -122,11 +122,19 @@ public class RefuelController {
         return new ResponseEntity<>(refuel, HttpStatus.CREATED);
     }
 
+
     @DeleteMapping("/refuels/{id}")
     public ResponseEntity<Void> deleteRefuel(@PathVariable Long id) {
         refuelService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
+
+
+
+
+
 
 
     // Control de excepciones
