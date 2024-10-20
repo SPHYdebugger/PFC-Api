@@ -36,6 +36,7 @@ public class Station {
     private boolean favorite = false;
     @Column
     private boolean glpFuel = false;
+    private boolean hide;
 
     @OneToMany(mappedBy = "station")
     private List<Refuel> refuels;

@@ -42,10 +42,13 @@ public class Vehicle {
     @Column
     private String fuel2;
     @Column
-    @NotNull(message = "Initial kilometers can´t be NULL")
-    @Positive(message = "Initial Kilimeters can´t be negative")
-    private int kmInit;
-
+    @NotNull(message = "Actual kilometers can´t be NULL")
+    @Positive(message = "Actual Kilimeters can´t be negative")
+    private int kmActual;
+    private float medConsumption;
+    @Column(name = "registration_date")
+    private String registrationDate;
+    private boolean hide;
 
 
     @OneToMany(mappedBy = "vehicle")
