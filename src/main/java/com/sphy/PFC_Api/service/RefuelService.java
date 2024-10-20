@@ -114,4 +114,17 @@ public class RefuelService {
         return refuelRepository.findVehicleId(id);
     }
 
+    public Optional<Refuel> findById(long refuelId) {
+        return refuelRepository.findById(refuelId);
+    }
+
+
+    public List<Refuel> getRefuelsByStationName(String refuelIdentifier) {
+        return refuelRepository.findByNameStation(refuelIdentifier);
+    }
+
+    public void deleteRefuelsByStationId(Long stationId) {
+        refuelRepository.deleteByStationId(stationId);
+    }
+
 }

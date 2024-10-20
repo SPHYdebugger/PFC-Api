@@ -57,7 +57,6 @@ public class VehicleController {
                     if (vehicleService.countRefuelsByVehicleId(vehicle.getId())!=null){
                         dto.setRefuels(vehicleService.countRefuelsByVehicleId(vehicle.getId()));
                     } else dto.setRefuels(0);
-
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -86,7 +85,6 @@ public class VehicleController {
         Optional<Vehicle> optionalVehicle = vehicleService.findByLicensePlate(newVehicle.getLicensePlate());
         if (optionalVehicle.isPresent()) {
             throw new VehicleAlreadyExistException("A vehicle with this license plate already exists.");
-
         }
         newVehicle.setRegistrationDate(LocalDate.now().toString());
         Vehicle savedVehicle = vehicleService.save(newVehicle);
@@ -104,13 +102,6 @@ public class VehicleController {
 
         }
     }
-
-
-
-
-
-
-
 
     @DeleteMapping("/vehicles/{vehicleIdentifier}")
     public ResponseEntity<Void> deleteVehicle(@PathVariable String vehicleIdentifier) throws VehicleNotFoundException {

@@ -1,6 +1,7 @@
 package com.sphy.PFC_Api.controller;
 
 import com.sphy.PFC_Api.dto.RefuelDTO;
+import com.sphy.PFC_Api.exception.RefuelNotFoundException;
 import com.sphy.PFC_Api.exception.StationNotFoundException;
 import com.sphy.PFC_Api.exception.VehicleNotFoundException;
 import com.sphy.PFC_Api.model.ErrorResponse;
@@ -43,50 +44,40 @@ public class RefuelController {
     }
 
     @GetMapping("/refuels")
-    public ResponseEntity<List<RefuelDTO>> findAll(
-            @RequestParam(defaultValue = "0") long refuelId
-    ) throws StationNotFoundException {
-        if (refuelId!=0) {
-            RefuelDTO refuelDTO = refuelService.getRefuelById(refuelId);
-            return new ResponseEntity<>(Collections.singletonList(refuelDTO), HttpStatus.OK);
-        } else {
-            List<RefuelDTO> allrefuels = refuelService.getAllRefuels();
-            return new ResponseEntity<>(allrefuels, HttpStatus.OK);
+    public ResponseEntity<List<RefuelDTO>> findAll(){
+        List<RefuelDTO> allrefuels = refuelService.getAllRefuels();
+        return new ResponseEntity<>(allrefuels, HttpStatus.OK);
+    }
+
+    // Buscar Refuel por id, nombre de la estación o matrícula del vehículo
+    @GetMapping("/refuels/{refuelIdentifier}")
+    public ResponseEntity<List<Refuel>> findRefuelByIdentifier(@PathVariable String refuelIdentifier) throws RefuelNotFoundException {
+        // Si el identificador es solo números, buscar por ID
+        if (refuelIdentifier.matches("\\d+")) {
+            long refuelId = Long.parseLong(refuelIdentifier);
+            Optional<Refuel> optionalRefuel = refuelService.findById(refuelId);
+            Refuel refuel = optionalRefuel.orElseThrow(() -> new RefuelNotFoundException("Refuel with ID " + refuelId + " not found."));
+            return new ResponseEntity<>(Collections.singletonList(refuel), HttpStatus.OK);
+
+            // Si el identificador es solo letras, buscar por nombre de la estación
+        } else if (refuelIdentifier.matches("[a-zA-Z]+")) {
+            List<Refuel> refuelsByStationName = refuelService.getRefuelsByStationName(refuelIdentifier);
+            if (refuelsByStationName.isEmpty()) {
+                throw new RefuelNotFoundException("No refuels found for station with name " + refuelIdentifier);
+            }
+            return new ResponseEntity<>(refuelsByStationName, HttpStatus.OK);
+
+            // Si el identificador es una combinación de letras y números, buscar por matrícula del vehículo
+        } else if (refuelIdentifier.matches("[a-zA-Z0-9]+")) {
+            List<Refuel> refuelsByLicensePlate = refuelService.getRefuelsByLicensePlate(refuelIdentifier);
+            if (refuelsByLicensePlate.isEmpty()) {
+                throw new RefuelNotFoundException("No refuels found for vehicle with license plate " + refuelIdentifier);
+            }
+            return new ResponseEntity<>(refuelsByLicensePlate, HttpStatus.OK);
         }
-
+        throw new RefuelNotFoundException("Invalid refuel identifier format.");
     }
 
-
-    @GetMapping("/refuels/vehicle/{LicensePlate}")
-    public ResponseEntity<List<Refuel>> getRefuelsByVehicleLicensePlate(@PathVariable String licensePlate ) {
-        List<Refuel> refuels = refuelService.getRefuelsByLicensePlate(licensePlate);
-        return new ResponseEntity<>(refuels, HttpStatus.OK);
-    }
-
-    @GetMapping("/refuels/station/{stationId}")
-    public ResponseEntity<List<Refuel>> getRefuelsByStationId(@PathVariable Long stationId) {
-        List<Refuel> refuels = refuelService.getRefuelsByStationId(stationId);
-        return new ResponseEntity<>(refuels, HttpStatus.OK);
-    }
-
-
-    /*@PostMapping("refuels/{vehicleId}/{stationId}")
-    public ResponseEntity<RefuelDTO> addRefuel(
-            @PathVariable long vehicleId,
-            @PathVariable long stationId,
-            @Valid @RequestBody Refuel refuel) {
-        Refuel savedRefuel = refuelService.addRefuel(vehicleId, stationId, refuel);
-        RefuelDTO refuelDTO = new RefuelDTO(
-                savedRefuel.getId(),
-                savedRefuel.getFuel(),
-                savedRefuel.getAmount(),
-                savedRefuel.getPrice(),
-                savedRefuel.getCreationDate(),
-                savedRefuel.getVehicle().getLicensePlate(),
-                savedRefuel.getStation().getName()
-        );
-        return new ResponseEntity<>(refuelDTO, HttpStatus.CREATED);
-    }*/
     @PostMapping("refuels/{vehicleId}/{stationId}")
     public ResponseEntity<Refuel> addRefuel(
             @PathVariable long vehicleId,
@@ -106,7 +97,6 @@ public class RefuelController {
         if (traveledKms <= 0 ){
             throw new IllegalArgumentException("The current kilometers cannot be less than the previous refueling");
         }
-
         Optional<Vehicle> vehicle = vehicleService.findById(vehicleId);
         Optional<Station> station = stationService.findById(stationId);
         String stationName = null;
@@ -119,7 +109,6 @@ public class RefuelController {
             existVehicle.setKmActual(refuel.getKmTotal());
             existVehicle.setMedConsumption(medConsumption);
             vehicleService.save(existVehicle);
-
         } else {
             throw new VehicleNotFoundException("Vehicle or station not found");
         }
@@ -130,13 +119,8 @@ public class RefuelController {
         refuel.setRefuelConsumption(refuelConsumption);
         refuel.setMedConsumption(medConsumption);
         refuelService.addRefuel(vehicleId, stationId, refuel);
-
         return new ResponseEntity<>(refuel, HttpStatus.CREATED);
     }
-
-
-
-
 
     @DeleteMapping("/refuels/{id}")
     public ResponseEntity<Void> deleteRefuel(@PathVariable Long id) {
@@ -171,7 +155,12 @@ public class RefuelController {
 
         return ResponseEntity.badRequest().body(ErrorResponse.validationError(errors));
     }
-
+    @ExceptionHandler(RefuelNotFoundException.class)
+    public ResponseEntity<ErrorResponse> refuelNotFoundException(RefuelNotFoundException pnfe) {
+        ErrorResponse errorResponse = ErrorResponse.generalError(404, pnfe.getMessage());
+        logger.error(pnfe.getMessage(), pnfe);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 
 
 }

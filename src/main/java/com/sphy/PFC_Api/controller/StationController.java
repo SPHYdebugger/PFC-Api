@@ -57,7 +57,6 @@ public class StationController {
         return new ResponseEntity<>(stationDTOs, HttpStatus.OK);
     }
 
-
     //Buscar por id o nombre
     @GetMapping("/stations/{stationIdentifier}")
     public ResponseEntity<List<Station>> findByIdentifier(@PathVariable String stationIdentifier) throws StationNotFoundException {
@@ -72,11 +71,6 @@ public class StationController {
             return new ResponseEntity<>(Collections.singletonList(station), HttpStatus.OK);
         }
     }
-
-
-
-
-
 
     // Crear una nueva estación
     @PostMapping("/stations")
@@ -106,24 +100,20 @@ public class StationController {
     // Eliminar una estación
     @DeleteMapping("/stations/{stationIdentifier}")
     public ResponseEntity<Void> deleteStation(@PathVariable String stationIdentifier) throws StationNotFoundException {
-        if (stationIdentifier.matches("\\d+")) { //solo números
+        Station station;
+
+        if (stationIdentifier.matches("\\d+")) {
             long stationId = Long.parseLong(stationIdentifier);
-            if (!stationService.existsById(stationId)) {
-                throw new StationNotFoundException("Station with ID " + stationId + " not found.");
-            }
-            refuelService.deleteRefuelsByVehicleId(stationId);
-            stationService.delete(stationId);
+            station = stationService.findById(stationId)
+                    .orElseThrow(() -> new StationNotFoundException("Station with ID " + stationId + " not found."));
         } else {
-            Optional<Station> optionalStation = stationService.findByName(stationIdentifier);
-            if (optionalStation.isPresent()) {
-                stationService.delete(optionalStation.get().getId());
-            } else {
-                throw new StationNotFoundException("Station with name " + stationIdentifier + " not found.");
-            }
+            station = stationService.findByName(stationIdentifier)
+                    .orElseThrow(() -> new StationNotFoundException("Station with name " + stationIdentifier + " not found."));
         }
+        refuelService.deleteRefuelsByStationId(station.getId());
+        stationService.delete(station.getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
 
 

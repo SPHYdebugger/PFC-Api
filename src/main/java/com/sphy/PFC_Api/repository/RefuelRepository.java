@@ -30,6 +30,7 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
     List<Refuel> findByVehicleId(Long vehicleId);
     List<Refuel> findByVehicleLicensePlate(String licensePlate);
     List<Refuel> findByStationId(Long stationId);
+    List<Refuel> findByNameStation(String refuelIdentifier);
 
     @Modifying
     @Transactional
@@ -43,6 +44,9 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
 
     @Query(value = "SELECT km_actual FROM vehicles WHERE id = :id", nativeQuery = true)
     Integer findTotalKmsByVehicleId(@Param("id") long id);
+    @Modifying
+    @Query("DELETE FROM Refuels WHERE station.id = :stationId")
+    void deleteByStationId(@Param("stationId") Long stationId);
 
 
 }
