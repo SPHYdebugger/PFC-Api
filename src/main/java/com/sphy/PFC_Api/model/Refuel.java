@@ -48,7 +48,7 @@ public class Refuel {
     @Column
     private boolean fulled;
     @Column(name = "creation_date")
-    private String creationDate;
+    private LocalDate creationDate;
 
     @Column
     private float refuelConsumption;

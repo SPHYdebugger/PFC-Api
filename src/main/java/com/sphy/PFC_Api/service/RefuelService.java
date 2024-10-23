@@ -45,7 +45,7 @@ public class RefuelService {
                         refuel.getFuel(),
                         refuel.getAmount(),
                         refuel.getPrice(),
-                        refuel.getCreationDate(),
+                        refuel.getCreationDate().toString(),
                         refuel.getVehicle().getLicensePlate(),
                         refuel.getStation().getName()
                 ))
@@ -96,7 +96,7 @@ public class RefuelService {
                 .orElseThrow(() -> new StationNotFoundException(stationId));
         refuel.setVehicle(vehicle);
         refuel.setStation(station);
-        refuel.setCreationDate(LocalDate.now().toString());
+        refuel.setCreationDate(LocalDate.now());
         return refuelRepository.save(refuel);
     }
 

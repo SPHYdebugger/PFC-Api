@@ -32,6 +32,6 @@ public class VehicleDTO {
     @Positive(message = "Initial Kilometers can´t be negative")
     private int kmActual;
     private float medConsumption;
-
+    private String registrationDate;
     private int refuels = 0;
 }

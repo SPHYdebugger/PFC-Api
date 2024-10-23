@@ -21,7 +21,7 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
     List<Refuel> findAll();
     Optional<Refuel> findById(long id);
 
-    List<Refuel> findByCreationDate(String date);
+
 
     List<Refuel> findByVehicle(Vehicle vehicle);
     List<Refuel> findByStation(Station station);

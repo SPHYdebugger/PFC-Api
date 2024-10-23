@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -47,7 +48,7 @@ public class Vehicle {
     private int kmActual;
     private float medConsumption;
     @Column(name = "registration_date")
-    private String registrationDate;
+    private LocalDate registrationDate;
     private boolean hide;
 
 

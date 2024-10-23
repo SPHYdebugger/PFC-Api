@@ -31,7 +31,7 @@ public class Station {
     private String address;
 
     @Column(name = "registration_date")
-    private String registrationDate;
+    private LocalDate registrationDate;
     @Column
     private boolean favorite = false;
     @Column

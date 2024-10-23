@@ -45,7 +45,7 @@ public class StationController {
                     dto.setId(station.getId());
                     dto.setName(station.getName());
                     dto.setAddress(station.getAddress());
-                    dto.setRegistrationDate(station.getRegistrationDate());
+                    dto.setRegistrationDate(station.getRegistrationDate().toString());
                     dto.setFavorite(station.isFavorite());
                     dto.setGlpFuel(station.isGlpFuel());
                     // Establecer el número de refuels para la estación
@@ -79,7 +79,7 @@ public class StationController {
         if (optionalStation.isPresent()) {
             throw new StationAlreadyExistException("A station with this name already exists.");
         }
-        station.setRegistrationDate(LocalDate.now().toString());
+        station.setRegistrationDate(LocalDate.now());
         stationService.save(station);
         return new ResponseEntity<>(station, HttpStatus.CREATED);
     }

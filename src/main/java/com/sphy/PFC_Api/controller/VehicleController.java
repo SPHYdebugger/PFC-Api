@@ -54,6 +54,7 @@ public class VehicleController {
                     dto.setFuel2(vehicle.getFuel2());
                     dto.setKmActual(vehicle.getKmActual());
                     dto.setMedConsumption(vehicle.getMedConsumption());
+                    dto.setRegistrationDate(vehicle.getRegistrationDate().toString());
                     if (vehicleService.countRefuelsByVehicleId(vehicle.getId())!=null){
                         dto.setRefuels(vehicleService.countRefuelsByVehicleId(vehicle.getId()));
                     } else dto.setRefuels(0);
@@ -86,7 +87,7 @@ public class VehicleController {
         if (optionalVehicle.isPresent()) {
             throw new VehicleAlreadyExistException("A vehicle with this license plate already exists.");
         }
-        newVehicle.setRegistrationDate(LocalDate.now().toString());
+        newVehicle.setRegistrationDate(LocalDate.now());
         Vehicle savedVehicle = vehicleService.save(newVehicle);
         return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
     }

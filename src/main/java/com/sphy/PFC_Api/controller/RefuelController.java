@@ -118,6 +118,7 @@ public class RefuelController {
         refuel.setRefueledLiters(fuelRefueled);
         refuel.setRefuelConsumption(refuelConsumption);
         refuel.setMedConsumption(medConsumption);
+
         refuelService.addRefuel(vehicleId, stationId, refuel);
         return new ResponseEntity<>(refuel, HttpStatus.CREATED);
     }
