@@ -19,7 +19,7 @@ public class VehicleService {
     private VehicleRepository vehicleRepository;
 
     public List<Vehicle> getAll() {
-        return vehicleRepository.findAll();
+        return vehicleRepository.findAllOrdered();
     }
     public Optional<Vehicle> findById(long id) {
         return vehicleRepository.findById(id);
@@ -38,19 +38,26 @@ public class VehicleService {
     }
 
 
-    public Vehicle modifyVehicleByLicense(VehicleDTO vehicleDTO, String licensePlate) {
+    public Vehicle modifyVehicleByLicense(Vehicle vehicle, String licensePlate) {
+        System.out.println("vehiculo enviado como cuerpo; " + vehicle);
         Optional<Vehicle> optionalVehicle = findByLicensePlate(licensePlate);
+        System.out.println("vehiculo encontrado con esa matricula; " + optionalVehicle.get());
         if (optionalVehicle.isPresent()) {
-            Vehicle vehicle = optionalVehicle.get();
-            vehicle.setBrand(vehicleDTO.getBrand());
-            vehicle.setModel(vehicleDTO.getModel());
-            vehicle.setFuel1(vehicleDTO.getFuel1());
-            vehicle.setFuel2(vehicleDTO.getFuel2());
-            vehicle.setKmActual(vehicleDTO.getKmActual());
-            return vehicleRepository.save(vehicle);
+            Vehicle vehicleTemp = optionalVehicle.get();
+
+            vehicleTemp.setBrand(vehicle.getBrand());
+            vehicleTemp.setModel(vehicle.getModel());
+            vehicleTemp.setFuel1(vehicle.getFuel1());
+            vehicleTemp.setFuel2(vehicle.getFuel2());
+            vehicleTemp.setKmActual(vehicle.getKmActual());
+            vehicleTemp.setMedConsumption(vehicle.getMedConsumption());
+            vehicleTemp.setRegistrationDate(vehicle.getRegistrationDate());
+            vehicleTemp.setHide(vehicle.isHide());
+            return vehicleRepository.save(vehicleTemp);
         }
-        return null;
+            return null;
     }
+
 
 
 
@@ -67,5 +74,6 @@ public class VehicleService {
     public Integer countRefuelsByVehicleId(long id) {
         return vehicleRepository.countRefuelsByVehicleId(id);
     }
+
 
 }

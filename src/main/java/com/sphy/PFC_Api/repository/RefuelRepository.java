@@ -28,9 +28,38 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
 
 
     List<Refuel> findByVehicleId(Long vehicleId);
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
+            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id " +
+            "FROM refuels r " +
+            "WHERE r.vehicle_id = :vehicleId " +
+            "ORDER BY r.id DESC", nativeQuery = true)
+    List<Refuel> findRefuelsByVehicleIdOrdered(@Param("vehicleId") String vehicleId);
+
     List<Refuel> findByVehicleLicensePlate(String licensePlate);
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
+            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id " +
+            "FROM refuels r " +
+            "WHERE r.name_vehicle = :vehicleName " +
+            "ORDER BY r.creation_date DESC", nativeQuery = true)
+    List<Refuel> findRefuelsByVehicleNameOrdered(@Param("vehicleName") String vehicleName);
+
+
     List<Refuel> findByStationId(Long stationId);
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
+            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id " +
+            "FROM refuels r " +
+            "WHERE r.station_id = :stationId " +
+            "ORDER BY r.id DESC", nativeQuery = true)
+    List<Refuel> findRefuelsByStationIdOrdered(@Param("stationId") String stationId);
+
+
     List<Refuel> findByNameStation(String refuelIdentifier);
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
+            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id " +
+            "FROM refuels r " +
+            "WHERE r.name_station = :stationName " +
+            "ORDER BY r.creation_date DESC", nativeQuery = true)
+    List<Refuel> findRefuelsByStationNameOrdered(@Param("stationName") String stationName);
 
     @Modifying
     @Transactional
@@ -52,6 +81,11 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
     /*@Modifying
     @Query("DELETE FROM refuels WHERE station_id = :stationId")
     void deleteByStationId(@Param("stationId") Long stationId);*/
+
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
+            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id " +
+            "FROM Refuel r ORDER BY r.id DESC", nativeQuery = true)
+    List<Refuel> findAllRefuelsOrdered();
 
 
 }

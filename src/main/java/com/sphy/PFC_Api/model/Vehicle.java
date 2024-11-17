@@ -50,6 +50,8 @@ public class Vehicle {
     @Column(name = "registration_date")
     private LocalDate registrationDate;
     private boolean hide;
+    @Column
+    private long userId;
 
 
     @OneToMany(mappedBy = "vehicle")

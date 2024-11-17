@@ -2,6 +2,7 @@ package com.sphy.PFC_Api.repository;
 
 
 import com.sphy.PFC_Api.model.Station;
+import com.sphy.PFC_Api.model.Vehicle;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -22,5 +23,10 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 
     @Query(value = "SELECT COUNT(*) FROM refuels WHERE station_id = :stationId", nativeQuery = true)
     int countRefuelsByStationId(@Param("stationId") long stationId);
+
+    @Query(value = "SELECT s.id, s.name, s.address, s.site, s.province, s.registration_date, s.favorite, s.glp_fuel, s.hide, s.user_id " +
+            "FROM stations s ORDER BY s.id DESC", nativeQuery = true)
+    List<Station> findAllStationsOrdered();
+
 
 }

@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface VehicleRepository extends CrudRepository<Vehicle, Long> {
     List<Vehicle> findAll();
 
+
+
     Optional<Vehicle> findById(long vehicleId);
     Optional<Vehicle> findByLicensePlate(String VehicleLicensePlate);
     //List<Vehicle> findByGlpFuel(boolean glpFuel);
@@ -26,5 +28,8 @@ public interface VehicleRepository extends CrudRepository<Vehicle, Long> {
     @Query(value = "SELECT COUNT(*) FROM refuels WHERE vehicle_id = :vehicleId", nativeQuery = true)
     int countRefuelsByVehicleId(@Param("vehicleId") long vehicleId);
 
+    @Query(value = "SELECT v.id, v.license_Plate, v.brand, v.model, v.km_actual, v.registration_date, v.hide, v.fuel1," +
+            " v.fuel2, v.med_consumption, v.user_id FROM vehicles v ORDER BY v.id DESC", nativeQuery = true)
+    List<Vehicle> findAllOrdered();
 
 }

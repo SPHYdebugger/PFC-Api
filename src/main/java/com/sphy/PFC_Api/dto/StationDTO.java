@@ -20,14 +20,20 @@ public class StationDTO {
 
     private String address;
 
+    private String site;
+
+    private String province;
 
     private String registrationDate;
 
     private boolean favorite = false;
 
     private boolean glpFuel = false;
+    private boolean hide = false;
 
     private int refuels = 0;
+
+    private long userId;
 
 
 }

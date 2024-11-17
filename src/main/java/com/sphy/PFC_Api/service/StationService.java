@@ -18,7 +18,7 @@ public class StationService {
 
 
     public List<Station> getAll() {
-        return stationRepository.findAll();
+        return stationRepository.findAllStationsOrdered();
     }
     public Optional<Station> findById(Long id) {
         return stationRepository.findById(id);
@@ -44,6 +44,7 @@ public class StationService {
             existingStation.setAddress(newStation.getAddress());
             existingStation.setFavorite(newStation.isFavorite());
             existingStation.setGlpFuel(newStation.isGlpFuel());
+            existingStation.setHide(newStation.isHide());
             return stationRepository.save(existingStation);
         }
         return null;

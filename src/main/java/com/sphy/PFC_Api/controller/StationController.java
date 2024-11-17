@@ -45,9 +45,13 @@ public class StationController {
                     dto.setId(station.getId());
                     dto.setName(station.getName());
                     dto.setAddress(station.getAddress());
+                    dto.setSite(station.getSite());
+                    dto.setProvince(station.getProvince());
                     dto.setRegistrationDate(station.getRegistrationDate().toString());
                     dto.setFavorite(station.isFavorite());
                     dto.setGlpFuel(station.isGlpFuel());
+                    dto.setHide(station.isHide());
+                    dto.setUserId(station.getUserId());
                     // Establecer el número de refuels para la estación
                     int refuelsCount = stationService.countRefuelsByStationId(station.getId());
                     dto.setRefuels(refuelsCount);
@@ -70,6 +74,42 @@ public class StationController {
             Station station = optionalStation.orElseThrow(() -> new StationNotFoundException("Station with name " + stationIdentifier + " not found."));
             return new ResponseEntity<>(Collections.singletonList(station), HttpStatus.OK);
         }
+    }
+
+    // Buscar por ID o nombre y devolver un DTO
+    @GetMapping("/station/{stationIdentifier}")
+    public ResponseEntity<StationDTO> findDTOByIdentifier(@PathVariable String stationIdentifier) throws StationNotFoundException {
+        Station station;
+
+        if (stationIdentifier.matches("\\d+")) {
+            long stationId = Long.parseLong(stationIdentifier);
+            station = stationService.findById(stationId)
+                    .orElseThrow(() -> new StationNotFoundException("Station with ID " + stationId + " not found."));
+        } else { // contiene letras
+            station = stationService.findByName(stationIdentifier)
+                    .orElseThrow(() -> new StationNotFoundException("Station with name " + stationIdentifier + " not found."));
+        }
+
+        StationDTO stationDTO = convertToDTO(station);
+        return new ResponseEntity<>(stationDTO, HttpStatus.OK);
+    }
+
+    private StationDTO convertToDTO(Station station) {
+        StationDTO dto = new StationDTO();
+        dto.setId(station.getId());
+        dto.setName(station.getName());
+        dto.setAddress(station.getAddress());
+        dto.setSite(station.getSite());
+        dto.setProvince(station.getProvince());
+
+        dto.setRegistrationDate(station.getRegistrationDate() != null ? station.getRegistrationDate().toString() : null);
+
+        dto.setFavorite(station.isFavorite());
+        dto.setGlpFuel(station.isGlpFuel());
+        dto.setRefuels(station.getRefuels() != null ? station.getRefuels().size() : 0);
+        dto.setUserId(station.getUserId());
+
+        return dto;
     }
 
     // Crear una nueva estación

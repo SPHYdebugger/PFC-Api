@@ -58,10 +58,33 @@ public class VehicleController {
                     if (vehicleService.countRefuelsByVehicleId(vehicle.getId())!=null){
                         dto.setRefuels(vehicleService.countRefuelsByVehicleId(vehicle.getId()));
                     } else dto.setRefuels(0);
+                    dto.setHide(vehicle.isHide());
+                    dto.setUserId(vehicle.getUserId());
                     return dto;
                 })
                 .collect(Collectors.toList());
         return new ResponseEntity<>(vehicleDTOs, HttpStatus.OK);
+    }
+
+    @GetMapping("/vehicle/{id}")
+    public ResponseEntity<VehicleDTO> getVehicleDTObyId(@PathVariable int id) throws VehicleNotFoundException{
+        Vehicle vehicle = vehicleService.findById(id)
+                .orElseThrow(() -> new VehicleNotFoundException("Vehicle with id " + id + " not found"));
+        VehicleDTO dto = new VehicleDTO();
+        dto.setId(vehicle.getId());
+        dto.setLicensePlate(vehicle.getLicensePlate());
+        dto.setBrand(vehicle.getBrand());
+        dto.setModel(vehicle.getModel());
+        dto.setFuel1(vehicle.getFuel1());
+        dto.setFuel2(vehicle.getFuel2());
+        dto.setKmActual(vehicle.getKmActual());
+        dto.setMedConsumption(vehicle.getMedConsumption());
+        dto.setRegistrationDate(vehicle.getRegistrationDate().toString());
+        dto.setUserId(vehicle.getUserId());
+        if (vehicleService.countRefuelsByVehicleId(vehicle.getId())!=null){
+            dto.setRefuels(vehicleService.countRefuelsByVehicleId(vehicle.getId()));
+        } else dto.setRefuels(0);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     // Buscar un vehículo por ID o matrícula
@@ -93,10 +116,11 @@ public class VehicleController {
     }
 
     @PutMapping("/vehicles/{licensePlate}")
-    public ResponseEntity<Vehicle> modifyVehicle(@Valid @RequestBody VehicleDTO vehicleDTO, @PathVariable String licensePlate) throws VehicleNotFoundException {
+    public ResponseEntity<Vehicle> modifyVehicle(@Valid @RequestBody Vehicle vehicle, @PathVariable String licensePlate) throws VehicleNotFoundException {
         Optional<Vehicle> optionalVehicle = vehicleService.findByLicensePlate(licensePlate);
         if (optionalVehicle.isPresent()) {
-            Vehicle updatedVehicle = vehicleService.modifyVehicleByLicense(vehicleDTO, licensePlate);
+            System.out.println("vehiculo encontrado con esa licencia " + optionalVehicle);
+            Vehicle updatedVehicle = vehicleService.modifyVehicleByLicense(vehicle, licensePlate);
             return new ResponseEntity<>(updatedVehicle, HttpStatus.OK);
         } else {
             throw new VehicleNotFoundException("Vehicle with license plate " + licensePlate + " not found.");

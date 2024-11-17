@@ -1,5 +1,6 @@
 package com.sphy.PFC_Api.dto;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -34,4 +35,8 @@ public class VehicleDTO {
     private float medConsumption;
     private String registrationDate;
     private int refuels = 0;
+    private boolean hide;
+
+    private long userId;
+
 }

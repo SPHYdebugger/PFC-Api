@@ -26,9 +26,11 @@ public class Station {
     @NotBlank(message = "Name can´t be empty")
     private String name;
     @Column
-    @NotNull(message = "Address can´t be NULL")
-    @NotBlank(message = "Address can´t be empty")
     private String address;
+    @Column
+    private String site;
+    @Column
+    private String province;
 
     @Column(name = "registration_date")
     private LocalDate registrationDate;
@@ -37,6 +39,8 @@ public class Station {
     @Column
     private boolean glpFuel = false;
     private boolean hide;
+    @Column
+    private long userId;
 
     @OneToMany(mappedBy = "station")
     private List<Refuel> refuels;

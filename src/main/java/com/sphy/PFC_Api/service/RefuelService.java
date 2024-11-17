@@ -47,7 +47,8 @@ public class RefuelService {
                         refuel.getPrice(),
                         refuel.getCreationDate().toString(),
                         refuel.getVehicle().getLicensePlate(),
-                        refuel.getStation().getName()
+                        refuel.getStation().getName(),
+                        refuel.getUserId()
                 ))
                 .collect(Collectors.toList());
     }
@@ -78,14 +79,14 @@ public class RefuelService {
         return refuelRepository.findByVehicleId(vehicleId);
     }
     public List<Refuel> getRefuelsByLicensePlate(String licensePlate) {
-        return refuelRepository.findByVehicleLicensePlate(licensePlate);
+        return refuelRepository.findRefuelsByVehicleNameOrdered(licensePlate);
     }
 
     public List<Refuel> getRefuelsByStationId(Long stationId) {
         return refuelRepository.findByStationId(stationId);
     }
     public List<Refuel> getRefuelsByStationName(String refuelIdentifier) {
-        return refuelRepository.findByNameStation(refuelIdentifier);
+        return refuelRepository.findRefuelsByStationNameOrdered(refuelIdentifier);
     }
 
 

@@ -59,13 +59,14 @@ public class RefuelController {
             Refuel refuel = optionalRefuel.orElseThrow(() -> new RefuelNotFoundException("Refuel with ID " + refuelId + " not found."));
             return new ResponseEntity<>(Collections.singletonList(refuel), HttpStatus.OK);
 
-            // solo letras, buscar por nombre de la estación
-        } else if (refuelIdentifier.matches("[a-zA-Z]+")) {
-            List<Refuel> refuelsByStationName = refuelService.getRefuelsByStationName(refuelIdentifier);
-            if (refuelsByStationName.isEmpty()) {
-                throw new RefuelNotFoundException("No refuels found for station with name " + refuelIdentifier);
-            }
-            return new ResponseEntity<>(refuelsByStationName, HttpStatus.OK);
+            // Buscar por nombre de la estación cuando el identifier es solo letras o letras con hasta tres números al final
+        } else if (refuelIdentifier.matches("[a-zA-Z\\s]+") || refuelIdentifier.matches("[a-zA-Z\\s]+\\d{1,3}?")) {
+                List<Refuel> refuelsByStationName = refuelService.getRefuelsByStationName(refuelIdentifier);
+                if (refuelsByStationName.isEmpty()) {
+                    throw new RefuelNotFoundException("No refuels found for station with name " + refuelIdentifier);
+                }
+                return new ResponseEntity<>(refuelsByStationName, HttpStatus.OK);
+
 
             // combinación de letras y números, buscar por matrícula del vehículo
         } else if (refuelIdentifier.matches("[a-zA-Z0-9]+")) {

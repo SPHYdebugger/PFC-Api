@@ -56,6 +56,8 @@ public class Refuel {
     private float refueledLiters;
     @Column
     private float medConsumption;
+    @Column
+    private long userId;
 
 
 
