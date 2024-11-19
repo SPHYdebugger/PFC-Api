@@ -31,6 +31,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless para JWT
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/register").permitAll()
                         .anyRequest().authenticated() // Todas las rutas requieren autenticación
                 )
                 .addFilter(jwtAuthenticationFilter) // Filtro para autenticación
