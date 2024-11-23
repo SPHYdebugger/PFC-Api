@@ -76,4 +76,5 @@ public class VehicleService {
     }
 
 
+    public List<Vehicle> getVehiclesByUser_id(long userId) { return vehicleRepository.findByUserIdOrdered(userId);}
 }

@@ -32,4 +32,7 @@ public interface VehicleRepository extends CrudRepository<Vehicle, Long> {
             " v.fuel2, v.med_consumption, v.user_id FROM vehicles v ORDER BY v.id DESC", nativeQuery = true)
     List<Vehicle> findAllOrdered();
 
+    @Query(value = "SELECT v.id, v.license_Plate, v.brand, v.model, v.km_actual, v.registration_date, v.hide, v.fuel1," +
+            " v.fuel2, v.med_consumption, v.user_id FROM vehicles v WHERE v.user_id = ?1 ORDER BY v.id DESC", nativeQuery = true)
+    List<Vehicle> findByUserIdOrdered(long userId);
 }

@@ -47,6 +47,7 @@ public class UserController {
 
     @GetMapping("/user/{id}")
     public ResponseEntity<UserDTO> getUserDTObyId(@PathVariable String email) throws UserNotFoundException {
+        System.out.println("entra en mail");
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
         UserDTO dto = new UserDTO();
@@ -57,12 +58,24 @@ public class UserController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @GetMapping("/userDTO/{id}")
+    public ResponseEntity<UserDTO> getUsernameDTObyId(@PathVariable long id) throws UserNotFoundException {
+        System.out.println("llega a id");
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+        UserDTO dto = new UserDTO();
+        dto.setUsername(user.getUsername());
+        dto.setPassword(user.getPassword());
+        dto.setEmail(user.getEmail());
 
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
 
 
     // Añadir un nuevo vehículo
     @PostMapping("/register")
     public ResponseEntity<?> saveUser(@Valid @RequestBody User newUser) {
+        System.out.println("entra por register");
         Optional<User> optionalUser = userRepository.findByEmail(newUser.getEmail());
         if (optionalUser.isPresent()) {
             throw new UserAlreadyExistException("A user with this email already exists.");

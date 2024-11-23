@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Refuel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @Column
     /*@NotNull(message = "station name can´t be NULL")

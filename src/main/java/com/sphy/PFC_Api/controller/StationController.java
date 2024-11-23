@@ -37,8 +37,8 @@ public class StationController {
 
     // Obtener todas las estaciones
     @GetMapping("/stations")
-    public ResponseEntity<List<StationDTO>> getAllStations() {
-        List<Station> allStations = stationService.getAll();
+    public ResponseEntity<List<StationDTO>> getAllStations(@RequestParam long id) {
+        List<Station> allStations = stationService.getStationsByUserId(id);
         List<StationDTO> stationDTOs = allStations.stream()
                 .map(station -> {
                     StationDTO dto = new StationDTO();
@@ -114,11 +114,12 @@ public class StationController {
 
     // Crear una nueva estación
     @PostMapping("/stations")
-    public ResponseEntity<Station> createStation(@Validated @RequestBody Station station) {
+    public ResponseEntity<Station> createStation(@Valid @RequestBody Station station) {
         Optional<Station> optionalStation = stationService.findByName(station.getName());
         if (optionalStation.isPresent()) {
             throw new StationAlreadyExistException("A station with this name already exists.");
         }
+
         station.setRegistrationDate(LocalDate.now());
         stationService.save(station);
         return new ResponseEntity<>(station, HttpStatus.CREATED);

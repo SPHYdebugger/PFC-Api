@@ -17,8 +17,8 @@ public class StationService {
     private StationRepository stationRepository;
 
 
-    public List<Station> getAll() {
-        return stationRepository.findAllStationsOrdered();
+    public List<Station> getStationsByUserId(long id) {
+        return stationRepository.findAllStationsOrderedByUserId(id);
     }
     public Optional<Station> findById(Long id) {
         return stationRepository.findById(id);

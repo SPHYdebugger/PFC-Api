@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleDTO {
+
     private long id;
     private String licensePlate;
     @NotNull(message = "Brand can't be NULL")

@@ -25,8 +25,8 @@ public interface StationRepository extends CrudRepository<Station, Long> {
     int countRefuelsByStationId(@Param("stationId") long stationId);
 
     @Query(value = "SELECT s.id, s.name, s.address, s.site, s.province, s.registration_date, s.favorite, s.glp_fuel, s.hide, s.user_id " +
-            "FROM stations s ORDER BY s.id DESC", nativeQuery = true)
-    List<Station> findAllStationsOrdered();
+            "FROM stations s WHERE s.user_id = ?1 ORDER BY s.id DESC", nativeQuery = true)
+    List<Station> findAllStationsOrderedByUserId(long userId);
 
 
 }

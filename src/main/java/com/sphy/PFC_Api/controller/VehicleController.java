@@ -41,9 +41,12 @@ public class VehicleController {
 
     // Obtener todos los vehículos
     @GetMapping("/vehicles")
-    public ResponseEntity<List<VehicleDTO>> getAllVehicles() {
-        List<Vehicle> allVehicles = vehicleService.getAll();
-        List<VehicleDTO> vehicleDTOs = allVehicles.stream()
+    public ResponseEntity<List<VehicleDTO>> getVehiclesByUserId(@RequestParam long id) {
+        // Obtener los vehículos asociados al email
+        List<Vehicle> vehicles = vehicleService.getVehiclesByUser_id(id);
+
+        // Convertir los vehículos a DTO
+        List<VehicleDTO> vehicleDTOs = vehicles.stream()
                 .map(vehicle -> {
                     VehicleDTO dto = new VehicleDTO();
                     dto.setId(vehicle.getId());
@@ -55,14 +58,17 @@ public class VehicleController {
                     dto.setKmActual(vehicle.getKmActual());
                     dto.setMedConsumption(vehicle.getMedConsumption());
                     dto.setRegistrationDate(vehicle.getRegistrationDate().toString());
-                    if (vehicleService.countRefuelsByVehicleId(vehicle.getId())!=null){
+                    if (vehicleService.countRefuelsByVehicleId(vehicle.getId()) != null) {
                         dto.setRefuels(vehicleService.countRefuelsByVehicleId(vehicle.getId()));
-                    } else dto.setRefuels(0);
+                    } else {
+                        dto.setRefuels(0);
+                    }
                     dto.setHide(vehicle.isHide());
                     dto.setUserId(vehicle.getUserId());
                     return dto;
                 })
                 .collect(Collectors.toList());
+
         return new ResponseEntity<>(vehicleDTOs, HttpStatus.OK);
     }
 
