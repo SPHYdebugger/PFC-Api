@@ -98,6 +98,7 @@ public class RefuelService {
         refuel.setVehicle(vehicle);
         refuel.setStation(station);
         refuel.setCreationDate(LocalDate.now());
+        System.out.println("el userId es.." + refuel.getUserId());
         return refuelRepository.save(refuel);
     }
 
@@ -119,7 +120,9 @@ public class RefuelService {
     public Float getAverageConsumption(long id) {
         return refuelRepository.findAverageMedConsumptionByVehicleId(id);
     }
-
+    public Float getAverageConsumption2(long id) {
+        return refuelRepository.findAverageMedConsumption2ByVehicleId(id);
+    }
 
     public void save(Refuel refuel) {
         refuelRepository.save(refuel);

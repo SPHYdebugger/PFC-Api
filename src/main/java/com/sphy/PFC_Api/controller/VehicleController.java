@@ -65,6 +65,7 @@ public class VehicleController {
                     }
                     dto.setHide(vehicle.isHide());
                     dto.setUserId(vehicle.getUserId());
+                    dto.setMedConsumption2(vehicle.getMedConsumption2());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -90,6 +91,7 @@ public class VehicleController {
         if (vehicleService.countRefuelsByVehicleId(vehicle.getId())!=null){
             dto.setRefuels(vehicleService.countRefuelsByVehicleId(vehicle.getId()));
         } else dto.setRefuels(0);
+        dto.setMedConsumption2(vehicle.getMedConsumption2());
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
@@ -117,6 +119,9 @@ public class VehicleController {
             throw new VehicleAlreadyExistException("A vehicle with this license plate already exists.");
         }
         newVehicle.setRegistrationDate(LocalDate.now());
+        if (newVehicle.getFuel2() != null) {
+            newVehicle.setMedConsumption2(5);
+        }
         Vehicle savedVehicle = vehicleService.save(newVehicle);
         return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
     }

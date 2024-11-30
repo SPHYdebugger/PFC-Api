@@ -37,17 +37,19 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
 
     List<Refuel> findByVehicleLicensePlate(String licensePlate);
     @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
-            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id " +
-            "FROM refuels r " +
+            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id, r.double_refuel, " +
+            "r.second_fuel, r.second_amount, r.kms_traveled_second_fuel, r.second_fulled, r.second_med_consumption, r.second_price," +
+            "r.second_refuel_consumption, r.second_refueled_liters FROM refuels r " +
             "WHERE r.name_vehicle = :vehicleName " +
             "ORDER BY r.creation_date DESC", nativeQuery = true)
     List<Refuel> findRefuelsByVehicleNameOrdered(@Param("vehicleName") String vehicleName);
 
 
     List<Refuel> findByStationId(Long stationId);
-    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
-            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id " +
-            "FROM refuels r " +
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled," +
+            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id, r.double_refuel," +
+            "r.second_fuel, r.second_amount, r.kms_traveled_second_fuel, r.second_fulled, r.second_med_consumption, r.second_price," +
+            "r.second_refuel_consumption, r.second_refueled_liters FROM refuels r " +
             "WHERE r.station_id = :stationId " +
             "ORDER BY r.id DESC", nativeQuery = true)
     List<Refuel> findRefuelsByStationIdOrdered(@Param("stationId") String stationId);
@@ -55,8 +57,9 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
 
     List<Refuel> findByNameStation(String refuelIdentifier);
     @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
-            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id " +
-            "FROM refuels r " +
+            "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id, r.double_refuel," +
+            "r.second_fuel, r.second_amount, r.kms_traveled_second_fuel, r.second_fulled, r.second_med_consumption, r.second_price," +
+            "r.second_refuel_consumption, r.second_refueled_liters FROM refuels r " +
             "WHERE r.name_station = :stationName " +
             "ORDER BY r.creation_date DESC", nativeQuery = true)
     List<Refuel> findRefuelsByStationNameOrdered(@Param("stationName") String stationName);
@@ -74,6 +77,9 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
 
     @Query(value = "SELECT AVG(med_consumption) FROM refuels WHERE vehicle_id = :vehicleId", nativeQuery = true)
     Float findAverageMedConsumptionByVehicleId(@Param("vehicleId") long vehicleId);
+
+    @Query(value = "SELECT AVG(second_med_consumption) FROM refuels WHERE vehicle_id = :vehicleId", nativeQuery = true)
+    Float findAverageMedConsumption2ByVehicleId(@Param("vehicleId") long vehicleId);
 
     @Query(value = "SELECT km_actual FROM vehicles WHERE id = :id", nativeQuery = true)
     Integer findTotalKmsByVehicleId(@Param("id") long id);

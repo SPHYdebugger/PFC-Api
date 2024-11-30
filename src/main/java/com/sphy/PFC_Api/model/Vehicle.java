@@ -52,7 +52,8 @@ public class Vehicle {
     private boolean hide;
     @Column
     private long userId;
-
+    @Column
+    private float medConsumption2;
 
     @OneToMany(mappedBy = "vehicle")
     private List<Refuel> refuels;

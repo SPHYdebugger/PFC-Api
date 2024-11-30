@@ -24,12 +24,12 @@ public class Refuel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @Column
-    /*@NotNull(message = "station name can´t be NULL")
-    @NotBlank(message = "station name can´t be empty")*/
+    @NotNull(message = "station name can´t be NULL")
+    @NotBlank(message = "station name can´t be empty")
     private String nameStation;
     @Column
-    /*@NotNull(message = "vehicleLicense can´t be NULL")
-    @NotBlank(message = "vehicleLicense can´t be empty")*/
+    @NotNull(message = "vehicleLicense can´t be NULL")
+    @NotBlank(message = "vehicleLicense can´t be empty")
     private String nameVehicle;
     @Column
     @NotNull(message = "Fuel can´t be NULL")
@@ -50,12 +50,33 @@ public class Refuel {
     @Column(name = "creation_date")
     private LocalDate creationDate;
 
+    @Column(name = "double_refuel")
+    private boolean doubleRefuel;
+    @Column(name = "second_fuel")
+    private String secondFuel;
+    @Column(name = "second_amount")
+    private float secondAmount;
+    @Column(name = "second_price")
+    private float secondPrice;
+    @Column
+    private boolean secondFulled;
+    @Column(name = "kms_traveled_secondFuel")
+    private int kmsTraveledSecondrefuel;
+
     @Column
     private float refuelConsumption;
     @Column
     private float refueledLiters;
     @Column
     private float medConsumption;
+
+    @Column
+    private float secondRefuelConsumption;
+    @Column
+    private float secondRefueledLiters;
+    @Column
+    private float secondMedConsumption;
+
     @Column
     private long userId;
 
