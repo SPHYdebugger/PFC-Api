@@ -32,19 +32,13 @@ public class Refuel {
     @NotBlank(message = "vehicleLicense can´t be empty")
     private String nameVehicle;
     @Column
-    @NotNull(message = "Fuel can´t be NULL")
-    @NotBlank(message = "Fuel can´t be empty")
     private String fuel;
     @Column
-    @Positive(message = "Amount can´t be negative")
     private float amount;
     @Column
-    @Positive(message = "Price can´t be negative")
     private float price;
     @Column
-    private int kmTotal;
-    @Column
-    private int kmTraveled;
+    private int kmTraveled1;
     @Column
     private boolean fulled;
     @Column(name = "creation_date")

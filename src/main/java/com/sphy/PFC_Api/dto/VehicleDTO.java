@@ -41,4 +41,9 @@ public class VehicleDTO {
     private long userId;
 
     private float medConsumption2;
+
+
+    private float kmFuel1;
+
+    private float kmFuel2;
 }

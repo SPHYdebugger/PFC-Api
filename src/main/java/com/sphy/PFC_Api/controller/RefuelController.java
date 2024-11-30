@@ -85,7 +85,8 @@ public class RefuelController {
             @PathVariable long stationId,
             @Valid @RequestBody Refuel refuel) {
 
-        int traveledKms;
+        int traveledKms1;
+        int traveledKms2;
         float fuelRefueled;
         float fuelRefueled2;
         float refuelConsumption;
@@ -99,11 +100,14 @@ public class RefuelController {
 
 
         if(refuel.isDoubleRefuel()){
-            traveledKms = refuel.getKmTotal() - refuelService.getTotalKmsByVehicleId(vehicleId);
+            Optional<Vehicle> vehicle = vehicleService.findById(vehicleId);
+            Optional<Station> station = stationService.findById(stationId);
+            traveledKms1 = refuel.getKmTraveled1();
+            traveledKms2 = refuel.getKmsTraveledSecondrefuel();
             fuelRefueled = refuel.getAmount()/ refuel.getPrice();
             fuelRefueled2 = refuel.getSecondAmount()/ refuel.getSecondPrice();
 
-            refuelConsumption = (fuelRefueled*100)/traveledKms;
+            refuelConsumption = (fuelRefueled*100)/traveledKms1;
             refuelConsumption2 = (fuelRefueled2*100)/refuel.getKmsTraveledSecondrefuel();
 
             averageConsumption = refuelService.getAverageConsumption(vehicleId);
@@ -119,76 +123,180 @@ public class RefuelController {
             }else {
                 medConsumption2 = refuelConsumption2;
             }
-            if (traveledKms <= 0 ){
-                throw new IllegalArgumentException("The current kilometers cannot be less than the previous refueling");
+            if (traveledKms1 < 0 ){
+                throw new IllegalArgumentException("The kilometers can´t be negative");
             }
-            Optional<Vehicle> vehicle = vehicleService.findById(vehicleId);
-            Optional<Station> station = stationService.findById(stationId);
+            if (traveledKms2 < 0 ){
+                throw new IllegalArgumentException("The kilometers can´t be negative");
+            }
 
             if (vehicle.isPresent() && station.isPresent()){
                 Vehicle existVehicle = vehicle.get();
                 Station existStation = station.get();
                 stationName = existStation.getName();
                 vehicleLicense = existVehicle.getLicensePlate();
-                existVehicle.setKmActual(refuel.getKmTotal());
+                existVehicle.setKmActual(vehicle.get().getKmActual()+traveledKms1+traveledKms2);
                 existVehicle.setMedConsumption(medConsumption);
                 existVehicle.setMedConsumption2(medConsumption2);
                 vehicleService.save(existVehicle);
             } else {
                 throw new VehicleNotFoundException("Vehicle or station not found");
             }
+
+            refuel.setNameStation(stationName);
+            refuel.setNameVehicle(vehicleLicense);
+            refuel.setKmTraveled1(traveledKms1);
+            refuel.setKmsTraveledSecondrefuel(traveledKms2);
+            refuel.setRefueledLiters(fuelRefueled);
+            refuel.setSecondRefueledLiters(fuelRefueled2);
+            refuel.setRefuelConsumption(refuelConsumption);
+            refuel.setSecondRefuelConsumption(refuelConsumption2);
+            refuel.setMedConsumption(medConsumption);
+            refuel.setSecondMedConsumption(medConsumption2);
+
+            refuelService.addRefuel(vehicleId, stationId, refuel);
+
+
         } else {
-            traveledKms = refuel.getKmTotal() - refuelService.getTotalKmsByVehicleId(vehicleId);
-            fuelRefueled = refuel.getAmount()/ refuel.getPrice();
-            fuelRefueled2 = 0;
-
-            refuelConsumption = (fuelRefueled*100)/traveledKms;
-            refuelConsumption2 = 0;
-
-            averageConsumption = refuelService.getAverageConsumption(vehicleId);
-
-            if (refuelService.getAverageConsumption2(vehicleId) == null){
-                medConsumption2 = 0;
-            }else {
-                medConsumption2 = refuelService.getAverageConsumption2(vehicleId);
-            }
-
-            if (averageConsumption != null){
-                medConsumption = (averageConsumption+refuelConsumption)/2;
-            }else {
-                medConsumption = refuelConsumption;
-            }
-            if (traveledKms <= 0 ){
-                throw new IllegalArgumentException("The current kilometers cannot be less than the previous refueling");
-            }
             Optional<Vehicle> vehicle = vehicleService.findById(vehicleId);
             Optional<Station> station = stationService.findById(stationId);
-            if (vehicle.isPresent() && station.isPresent()){
-                Vehicle existVehicle = vehicle.get();
-                Station existStation = station.get();
-                stationName = existStation.getName();
-                vehicleLicense = existVehicle.getLicensePlate();
-                existVehicle.setKmActual(refuel.getKmTotal());
-                existVehicle.setMedConsumption(medConsumption);
-                existVehicle.setMedConsumption2(medConsumption2);
-                vehicleService.save(existVehicle);
-            } else {
-                throw new VehicleNotFoundException("Vehicle or station not found");
+            if (refuel.getSecondFuel() == null){
+                traveledKms1 = refuel.getKmTraveled1();
+                traveledKms2 = 0;
+                fuelRefueled = refuel.getAmount()/ refuel.getPrice();
+                fuelRefueled2 = 0;
+
+                if (traveledKms1 == 0 || fuelRefueled == 0){
+                    refuelConsumption = 0;
+                } else {
+                    refuelConsumption = (fuelRefueled*100)/traveledKms1;
+                }
+
+
+                refuelConsumption2 = 0;
+
+
+                averageConsumption = refuelService.getAverageConsumption(vehicleId);
+                averageConsumption2 = refuelService.getAverageConsumption2(vehicleId);
+
+                if (averageConsumption != null && refuelConsumption > 0){
+                    medConsumption = (averageConsumption+refuelConsumption)/2;
+                }else if (averageConsumption != null && refuelConsumption == 0){
+                    medConsumption = averageConsumption;
+                } else if (averageConsumption == null && refuelConsumption > 0){
+                    medConsumption = refuelConsumption;
+                }else {
+                    medConsumption = 5;
+                }
+
+                if (averageConsumption2 != null){
+                    medConsumption2 = averageConsumption2;
+                }else {
+                    medConsumption2 = 5;
+                }
+
+
+                if (traveledKms1 <= 0 ){
+                    throw new IllegalArgumentException("The kilometers can´t be negative");
+                }
+
+                if (vehicle.isPresent() && station.isPresent()){
+                    Vehicle existVehicle = vehicle.get();
+                    Station existStation = station.get();
+                    stationName = existStation.getName();
+                    vehicleLicense = existVehicle.getLicensePlate();
+                    existVehicle.setKmActual(vehicle.get().getKmActual()+traveledKms1+traveledKms2);
+                    existVehicle.setMedConsumption(medConsumption);
+                    existVehicle.setMedConsumption2(medConsumption2);
+                    vehicleService.save(existVehicle);
+                } else {
+                    throw new VehicleNotFoundException("Vehicle or station not found");
+                }
+
+                refuel.setNameStation(stationName);
+                refuel.setNameVehicle(vehicleLicense);
+                refuel.setKmTraveled1(traveledKms1);
+                refuel.setKmsTraveledSecondrefuel(traveledKms2);
+                refuel.setRefueledLiters(fuelRefueled);
+                refuel.setSecondRefueledLiters(fuelRefueled2);
+                refuel.setRefuelConsumption(refuelConsumption);
+                refuel.setSecondRefuelConsumption(refuelConsumption2);
+                refuel.setMedConsumption(medConsumption);
+                refuel.setSecondMedConsumption(medConsumption2);
+
+                refuelService.addRefuel(vehicleId, stationId, refuel);
             }
+
+            if (refuel.getFuel() == null){
+                traveledKms1 = 0;
+                traveledKms2 = refuel.getKmsTraveledSecondrefuel();
+                fuelRefueled = 0;
+                fuelRefueled2 = refuel.getSecondAmount()/ refuel.getSecondPrice();
+
+
+                refuelConsumption = 0;
+
+
+                if (traveledKms2 == 0 || fuelRefueled2 == 0){
+                    refuelConsumption2 = 0;
+                } else {
+                    refuelConsumption2 = (fuelRefueled2*100)/traveledKms2;
+                }
+                System.out.println("valor de refuelConsumption2 es: " + refuelConsumption2);
+
+                averageConsumption = refuelService.getAverageConsumption(vehicleId);
+                averageConsumption2 = refuelService.getAverageConsumption2(vehicleId);
+
+                if (averageConsumption != null){
+                    medConsumption = averageConsumption;
+                }else {
+                    medConsumption = 5;
+                }
+
+                if (averageConsumption2 != null && refuelConsumption2 > 0){
+                    medConsumption2 = (averageConsumption2+refuelConsumption2)/2;
+                }else if (averageConsumption2 != null && refuelConsumption2 == 0){
+                    medConsumption2 = averageConsumption2;
+                } else if (averageConsumption2 == null && refuelConsumption2 > 0){
+                    medConsumption2 = refuelConsumption2;
+                }else {
+                    medConsumption2 = 5;
+                }
+
+                if (traveledKms2 <= 0 ){
+                    throw new IllegalArgumentException("The kilometers can´t be negative");
+                }
+
+                if (vehicle.isPresent() && station.isPresent()){
+                    Vehicle existVehicle = vehicle.get();
+                    Station existStation = station.get();
+                    stationName = existStation.getName();
+                    vehicleLicense = existVehicle.getLicensePlate();
+                    existVehicle.setKmActual(vehicle.get().getKmActual()+traveledKms1+traveledKms2);
+                    existVehicle.setMedConsumption(medConsumption);
+                    existVehicle.setMedConsumption2(medConsumption2);
+                    vehicleService.save(existVehicle);
+                } else {
+                    throw new VehicleNotFoundException("Vehicle or station not found");
+                }
+
+                refuel.setNameStation(stationName);
+                refuel.setNameVehicle(vehicleLicense);
+                refuel.setKmTraveled1(traveledKms1);
+                refuel.setKmsTraveledSecondrefuel(traveledKms2);
+                refuel.setRefueledLiters(fuelRefueled);
+                refuel.setSecondRefueledLiters(fuelRefueled2);
+                refuel.setRefuelConsumption(refuelConsumption);
+                refuel.setSecondRefuelConsumption(refuelConsumption2);
+                refuel.setMedConsumption(medConsumption);
+                refuel.setSecondMedConsumption(medConsumption2);
+
+                refuelService.addRefuel(vehicleId, stationId, refuel);
+            }
+
         }
 
 
-        refuel.setNameStation(stationName);
-        refuel.setNameVehicle(vehicleLicense);
-        refuel.setKmTraveled(traveledKms);
-        refuel.setRefueledLiters(fuelRefueled);
-        refuel.setSecondRefueledLiters(fuelRefueled2);
-        refuel.setRefuelConsumption(refuelConsumption);
-        refuel.setSecondRefuelConsumption(refuelConsumption2);
-        refuel.setMedConsumption(medConsumption);
-        refuel.setSecondMedConsumption(medConsumption2);
-
-        refuelService.addRefuel(vehicleId, stationId, refuel);
         return new ResponseEntity<>(refuel, HttpStatus.CREATED);
     }
 

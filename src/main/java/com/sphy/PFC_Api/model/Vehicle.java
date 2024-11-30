@@ -54,6 +54,10 @@ public class Vehicle {
     private long userId;
     @Column
     private float medConsumption2;
+    @Column
+    private int kmFuel1;
+    @Column
+    private int kmFuel2;
 
     @OneToMany(mappedBy = "vehicle")
     private List<Refuel> refuels;

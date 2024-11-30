@@ -53,6 +53,8 @@ public class VehicleService {
             vehicleTemp.setMedConsumption(vehicle.getMedConsumption());
             vehicleTemp.setRegistrationDate(vehicle.getRegistrationDate());
             vehicleTemp.setHide(vehicle.isHide());
+            vehicleTemp.setKmFuel1(vehicle.getKmFuel1());
+            vehicleTemp.setKmFuel2(vehicle.getKmFuel2());
             return vehicleRepository.save(vehicleTemp);
         }
             return null;

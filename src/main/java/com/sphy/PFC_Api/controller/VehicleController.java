@@ -66,6 +66,8 @@ public class VehicleController {
                     dto.setHide(vehicle.isHide());
                     dto.setUserId(vehicle.getUserId());
                     dto.setMedConsumption2(vehicle.getMedConsumption2());
+                    dto.setKmFuel1(vehicle.getKmFuel1());
+                    dto.setKmFuel2(vehicle.getKmFuel2());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -92,6 +94,8 @@ public class VehicleController {
             dto.setRefuels(vehicleService.countRefuelsByVehicleId(vehicle.getId()));
         } else dto.setRefuels(0);
         dto.setMedConsumption2(vehicle.getMedConsumption2());
+        dto.setKmFuel1(vehicle.getKmFuel1());
+        dto.setKmFuel2(vehicle.getKmFuel2());
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
