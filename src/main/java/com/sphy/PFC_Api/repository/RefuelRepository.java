@@ -36,7 +36,7 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
     List<Refuel> findRefuelsByVehicleIdOrdered(@Param("vehicleId") String vehicleId);
 
     List<Refuel> findByVehicleLicensePlate(String licensePlate);
-    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_traveled1, r.fulled, " +
             "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id, r.double_refuel, " +
             "r.second_fuel, r.second_amount, r.kms_traveled_second_fuel, r.second_fulled, r.second_med_consumption, r.second_price," +
             "r.second_refuel_consumption, r.second_refueled_liters FROM refuels r " +
@@ -46,7 +46,7 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
 
 
     List<Refuel> findByStationId(Long stationId);
-    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled," +
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_traveled1, r.fulled," +
             "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id, r.double_refuel," +
             "r.second_fuel, r.second_amount, r.kms_traveled_second_fuel, r.second_fulled, r.second_med_consumption, r.second_price," +
             "r.second_refuel_consumption, r.second_refueled_liters FROM refuels r " +
@@ -56,7 +56,7 @@ public interface RefuelRepository extends CrudRepository<Refuel, Long> {
 
 
     List<Refuel> findByNameStation(String refuelIdentifier);
-    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_total, r.km_traveled, r.fulled, " +
+    @Query(value = "SELECT r.id, r.name_station, r.name_vehicle, r.fuel, r.amount, r.price, r.km_traveled1, r.fulled, " +
             "r.creation_date, r.refuel_consumption, r.refueled_liters, r.med_consumption, r.station_id, r.vehicle_id, r.user_id, r.double_refuel," +
             "r.second_fuel, r.second_amount, r.kms_traveled_second_fuel, r.second_fulled, r.second_med_consumption, r.second_price," +
             "r.second_refuel_consumption, r.second_refueled_liters FROM refuels r " +

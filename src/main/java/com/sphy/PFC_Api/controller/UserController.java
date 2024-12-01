@@ -82,6 +82,7 @@ public class UserController {
         }
         String password = new BCryptPasswordEncoder().encode(newUser.getPassword());
         newUser.setPassword(password);
+        newUser.setCreationDate(LocalDate.now());
         User savedUser = userService.save(newUser);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
