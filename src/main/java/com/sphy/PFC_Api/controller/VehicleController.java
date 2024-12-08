@@ -132,6 +132,12 @@ public class VehicleController {
 
     @PutMapping("/vehicles/{licensePlate}")
     public ResponseEntity<Vehicle> modifyVehicle(@Valid @RequestBody Vehicle vehicle, @PathVariable String licensePlate) throws VehicleNotFoundException {
+        System.out.println("Vehículo que se va a enviar para actualización:");
+        System.out.println("Matrícula: " + vehicle.getLicensePlate());
+        System.out.println("Marca: " + vehicle.getBrand());
+        System.out.println("Modelo: " + vehicle.getModel());
+        System.out.println("Kilómetros: " + vehicle.getKmActual());
+        System.out.println("Fecha de registro: " + vehicle.getRegistrationDate());
         Optional<Vehicle> optionalVehicle = vehicleService.findByLicensePlate(licensePlate);
         if (optionalVehicle.isPresent()) {
             System.out.println("vehiculo encontrado con esa licencia " + optionalVehicle);

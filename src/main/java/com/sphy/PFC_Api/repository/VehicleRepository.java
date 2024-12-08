@@ -18,9 +18,6 @@ public interface VehicleRepository extends CrudRepository<Vehicle, Long> {
 
     Optional<Vehicle> findById(long vehicleId);
     Optional<Vehicle> findByLicensePlate(String VehicleLicensePlate);
-    //List<Vehicle> findByGlpFuel(boolean glpFuel);
-    //List<Vehicle> findByUser(String userId);
-
 
     void deleteById(long vehicleId);
     void deleteByLicensePlate(String licensePlate);
